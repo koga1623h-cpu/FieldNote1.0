@@ -150,7 +150,7 @@
     border-bottom: 2px solid var(--accent);
   }
 
-  /* ── 営業フラグ ── */
+  /* ── つなぐ（共有事項） ── */
   .flag-list {
     display: flex;
     flex-wrap: wrap;
@@ -189,7 +189,7 @@
   .screen.active { display: block; }
 
   /* ── VISIT LIST ── */
-  .list-wrap { padding: 16px 24px; }
+  .list-wrap { padding: 16px 24px 110px; }
   .section-label {
     font-family: 'DM Mono', monospace;
     font-size: 10px;
@@ -198,6 +198,8 @@
     text-transform: uppercase;
     margin-bottom: 12px;
   }
+  .sort-opt:active { background: var(--surface2); }
+  .sort-opt.current { color: var(--active); font-weight: 500; }
 
   /* ── 施設グループ（アコーディオン） ── */
   .facility-group {
@@ -273,9 +275,16 @@
   .visit-card-left { display: flex; align-items: center; gap: 12px; }
   .visit-time {
     font-family: 'DM Mono', monospace;
-    font-size: 13px;
+    font-size: 15px;
     color: var(--text);
     font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .visit-weekday {
+    font-size: 13px;
+    color: var(--text2);
+    font-weight: 400;
+    font-family: 'DM Mono', monospace;
   }
   .visit-card-arrow { color: var(--text3); }
   .visit-card-arrow svg { width: 14px; height: 14px; }
@@ -358,27 +367,37 @@
   }
 
   /* ── NEW VISIT BUTTON ── */
-  .fab-wrap { padding: 8px 24px 32px; }
+  /* ── FAB（浮動アクションボタン） ── */
   .fab {
-    width: 100%;
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
     background: var(--accent);
     color: var(--bg);
     border: none;
-    border-radius: 2px;
-    padding: 15px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    letter-spacing: 0.02em;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    transition: background 0.15s;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 50;
+    transition: all 0.15s;
   }
-  .fab:active { background: var(--active); }
-  .fab svg { width: 16px; height: 16px; }
+  .fab:active {
+    transform: scale(0.94);
+    background: #c89a3d;
+  }
+  .fab svg { width: 24px; height: 24px; stroke-width: 2.5; }
+
+  /* 480px幅を超える場合は中央寄せのコンテナに合わせる */
+  @media (min-width: 480px) {
+    .fab {
+      right: calc(50% - 240px + 24px);
+    }
+  }
 
   /* ── FORM SCREEN ── */
   .form-header {
@@ -661,15 +680,15 @@
 <div class="header-nav">
   <button class="nav-tab active" id="tab-list" onclick="showScreen('screen-list')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:13px;height:13px"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-    記録
+    あつめる
+  </button>
+  <button class="nav-tab" id="tab-export" onclick="showScreen('screen-export')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:13px;height:13px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    つなぐ
   </button>
   <button class="nav-tab" id="tab-summary" onclick="showScreen('screen-summary')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:13px;height:13px"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
     一覧
-  </button>
-  <button class="nav-tab" id="tab-export" onclick="showScreen('screen-export')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:13px;height:13px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-    出力
   </button>
   <button class="nav-tab" id="tab-master" onclick="showScreen('screen-master')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:13px;height:13px"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -687,18 +706,29 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:14px;height:14px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
-    <div class="section-label">履歴</div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px">
+      <div class="section-label" style="margin-bottom:0">履歴</div>
+      <div style="position:relative">
+        <button id="sort-toggle" onclick="toggleSortMenu(event)" style="background:none;border:none;cursor:pointer;padding:2px 0;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.08em;color:var(--text3);text-transform:uppercase;display:flex;align-items:center;gap:3px">
+          <span id="sort-label">直近順</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:10px;height:10px"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div id="sort-menu" style="display:none;position:absolute;right:0;top:100%;margin-top:4px;background:var(--surface);border:1px solid var(--border);border-radius:2px;box-shadow:0 2px 8px rgba(0,0,0,0.08);z-index:30;min-width:130px">
+          <div onclick="setSort('recent')" class="sort-opt" data-key="recent" style="padding:10px 14px;font-size:12px;cursor:pointer;color:var(--text)">直近訪問順</div>
+          <div onclick="setSort('oldest')" class="sort-opt" data-key="oldest" style="padding:10px 14px;font-size:12px;cursor:pointer;color:var(--text);border-top:1px solid var(--border)">古い訪問順</div>
+          <div onclick="setSort('aiueo')" class="sort-opt" data-key="aiueo" style="padding:10px 14px;font-size:12px;cursor:pointer;color:var(--text);border-top:1px solid var(--border)">五十音順</div>
+          <div onclick="setSort('count')" class="sort-opt" data-key="count" style="padding:10px 14px;font-size:12px;cursor:pointer;color:var(--text);border-top:1px solid var(--border)">訪問回数順</div>
+        </div>
+      </div>
+    </div>
     <div id="visit-list"></div>
   </div>
 
-  <div class="fab-wrap">
-    <button class="fab" onclick="openNewVisit()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-      </svg>
-      記録を追加
-    </button>
-  </div>
+  <button class="fab" onclick="openNewVisit()" aria-label="記録を追加">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+  </button>
 </div>
 
 <!-- ══════════════════════════════ FORM SCREEN ══════════════════════════════ -->
@@ -722,9 +752,10 @@
         </svg>
         施設名
       </div>
-      <select id="f-facility">
+      <select id="f-facility" onchange="showPrevVisit()">
         <option value="">施設を選択してください</option>
       </select>
+      <div id="prev-visit" style="display:none;margin-top:10px"></div>
     </div>
 
     <!-- 担当者 -->
@@ -772,10 +803,10 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
           <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/>
         </svg>
-        営業フラグ
+        つなぐ（共有事項）
       </div>
       <div class="flag-list" id="flag-list"></div>
-      <textarea id="f-flag-memo" placeholder="営業への申し送り（提案ポイント・タイミングなど）" style="margin-top:10px"></textarea>
+      <textarea id="f-flag-memo" placeholder="営業に伝えたいこと（提案ポイント・タイミング・注意点など）" style="margin-top:10px"></textarea>
     </div>
 
     <!-- メモ -->
@@ -797,12 +828,12 @@
       </svg>
       保存
     </button>
-    <button class="btn-export" onclick="exportVisit()">
+    <button class="btn-export" onclick="saveAndExport()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
         <polyline points="22,6 12,13 2,6"/>
       </svg>
-      メール
+      保存→送信
     </button>
   </div>
 </div>
@@ -866,29 +897,44 @@
       <div class="field-label">登録済み作業</div>
       <div id="work-list"></div>
     </div>
+
+    <div style="height:1px;background:var(--border);margin:8px 0 24px"></div>
+
+    <!-- データ管理 -->
+    <div class="field">
+      <div class="field-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:14px;height:14px"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg>
+        データ管理
+      </div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.6">全件をCSVで出力。Excelで開ける表形式で、バックアップや引き継ぎ用に。</div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:2px;padding:12px 14px;font-size:12px;color:var(--text2);margin-bottom:12px">
+        <span style="color:var(--text3)">記録件数</span>　<span id="export-stats" style="font-family:'DM Mono',monospace;color:var(--text);font-weight:500">—</span>
+      </div>
+      <button onclick="exportAllCSV()" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:2px;padding:14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        全件CSV出力
+      </button>
+    </div>
   </div>
 </div>
 
 <!-- ══════════════════════════════ EXPORT SCREEN ══════════════════════════════ -->
 <div id="screen-export" class="screen">
   <div class="form-body">
+
+    <!-- 日次まとめ -->
     <div class="field">
       <div class="field-label">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:14px;height:14px"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/></svg>
-        CSVファイル
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:14px;height:14px"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        日次まとめメール
       </div>
-      <div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.6">Excel・スプレッドシートで開ける表形式。バックアップ・集計・引き継ぎに利用可能。</div>
-      <button onclick="exportAllCSV()" style="width:100%;background:var(--accent);border:none;border-radius:2px;padding:14px;color:var(--bg);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        CSVで出力
+      <div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.6">指定日に訪問した全施設を1通のメールにまとめて送信。</div>
+      <input type="date" id="daily-date" onchange="updateDailyCount()" style="width:100%;margin-bottom:10px">
+      <div id="daily-count" style="font-size:12px;color:var(--text2);margin-bottom:12px;text-align:center;font-family:'DM Mono',monospace">—</div>
+      <button onclick="exportDailyEmail()" style="width:100%;background:var(--accent);border:none;border-radius:2px;padding:14px;color:var(--bg);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:14px;height:14px"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        まとめてメール送信
       </button>
-    </div>
-
-    <div style="height:1px;background:var(--border);margin:20px 0"></div>
-
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:2px;padding:14px;font-size:12px;color:var(--text2);line-height:1.7">
-      <div style="font-weight:500;color:var(--text);margin-bottom:6px">記録件数</div>
-      <span id="export-stats" style="font-family:'DM Mono',monospace;font-size:14px;color:var(--text)">—</span>
     </div>
   </div>
 </div>
@@ -910,7 +956,7 @@
 const ITEMS = [
   { id: 'bed',      label: 'ベッド',     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 9V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v3"/><path d="M2 11v5a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5"/><rect x="6" y="9" width="12" height="4" rx="1"/></svg>` },
   { id: 'mattress', label: 'マットレス', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="8" width="20" height="8" rx="2"/><line x1="2" y1="12" x2="22" y2="12"/></svg>` },
-  { id: 'tv',       label: 'TV',         icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="14" rx="2"/><line x1="8" y1="22" x2="16" y2="22"/><line x1="12" y1="18" x2="12" y2="22"/></svg>` },
+  { id: 'tv',       label: 'TV',         icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="7" y1="21" x2="17" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>` },
   { id: 'comm',     label: '通信機器',   icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="currentColor"/></svg>` },
   { id: 'bath',     label: '浴室機器',   icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 12h16v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6z"/><path d="M4 12V6a2 2 0 0 1 2-2h1v4"/><line x1="8" y1="22" x2="8" y2="24"/><line x1="16" y1="22" x2="16" y2="24"/></svg>` },
   { id: 'other',    label: 'その他',     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>` },
@@ -1019,9 +1065,9 @@ let editingVisitId = null;
 // ── INIT ──
 function init() {
   const now = new Date();
-  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const days = ['日','月','火','水','木','金','土'];
   document.getElementById('header-date').textContent =
-    `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} ${days[now.getDay()]}`;
+    `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} (${days[now.getDay()]})`;
   renderList();
   // スプラッシュをアニメ完了後にDOMから削除
   setTimeout(() => {
@@ -1029,6 +1075,33 @@ function init() {
     if (splash) splash.remove();
   }, 1700);
 }
+
+let currentSort = localStorage.getItem('sortMode') || 'recent';
+
+function toggleSortMenu(e) {
+  e?.stopPropagation();
+  const menu = document.getElementById('sort-menu');
+  menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+  document.querySelectorAll('.sort-opt').forEach(el => {
+    el.classList.toggle('current', el.dataset.key === currentSort);
+  });
+}
+
+function setSort(mode) {
+  currentSort = mode;
+  localStorage.setItem('sortMode', mode);
+  const labels = { recent: '直近順', oldest: '古い順', aiueo: '五十音順', count: '回数順' };
+  document.getElementById('sort-label').textContent = labels[mode] || '直近順';
+  document.getElementById('sort-menu').style.display = 'none';
+  renderList();
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('#sort-toggle') && !e.target.closest('#sort-menu')) {
+    const menu = document.getElementById('sort-menu');
+    if (menu) menu.style.display = 'none';
+  }
+});
 
 // ── LIST ──
 function renderList() {
@@ -1038,6 +1111,13 @@ function renderList() {
   const query = (searchEl?.value || '').trim().toLowerCase();
   if (clearBtn) clearBtn.style.display = query ? 'flex' : 'none';
 
+  // ソートラベルを起動時に反映
+  const sortLabel = document.getElementById('sort-label');
+  if (sortLabel) {
+    const labels = { recent: '直近順', oldest: '古い順', aiueo: '五十音順', count: '回数順' };
+    sortLabel.textContent = labels[currentSort] || '直近順';
+  }
+
   if (visits.length === 0) {
     el.innerHTML = `<div class="empty-state">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
@@ -1046,7 +1126,7 @@ function renderList() {
     return;
   }
 
-  // 施設ごとにグループ化（最新順）
+  // 施設ごとにグループ化（中身は新しい順固定）
   const groups = {};
   visits.slice().reverse().forEach(v => {
     const key = v.facility || '（施設名未入力）';
@@ -1068,12 +1148,16 @@ function renderList() {
     return;
   }
 
-  // 直近訪問日順にソート
-  entries.sort((a, b) => {
-    const aLatest = a[1][0]?.id || '0';
-    const bLatest = b[1][0]?.id || '0';
-    return bLatest.localeCompare(aLatest);
-  });
+  // ソート切替
+  if (currentSort === 'recent') {
+    entries.sort((a, b) => (b[1][0]?.id || '0').localeCompare(a[1][0]?.id || '0'));
+  } else if (currentSort === 'oldest') {
+    entries.sort((a, b) => (a[1][0]?.id || '0').localeCompare(b[1][0]?.id || '0'));
+  } else if (currentSort === 'aiueo') {
+    entries.sort((a, b) => a[0].localeCompare(b[0], 'ja'));
+  } else if (currentSort === 'count') {
+    entries.sort((a, b) => b[1].length - a[1].length);
+  }
 
   el.innerHTML = entries.map(([facility, vlist]) => {
     const cards = vlist.map(v => {
@@ -1081,10 +1165,22 @@ function renderList() {
       const flagBadges = activeFlags.length > 0
         ? `<span style="background:var(--active);color:white;font-size:10px;padding:2px 7px;border-radius:2px;font-weight:500;font-family:'DM Mono',monospace">${activeFlags.length === 1 ? activeFlags[0].label : activeFlags.length + '件'}</span>`
         : '';
+      // datetime "12/3 14:30" → "2026.12.03" + (火)
+      const dateKey = getDateKey(v);
+      let dateDisp = (v.datetime || '').split(' ')[0];
+      let weekday = '';
+      if (dateKey) {
+        const d = new Date(dateKey);
+        if (!isNaN(d.getTime())) {
+          dateDisp = `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+          weekday = `(${['日','月','火','水','木','金','土'][d.getDay()]})`;
+        }
+      }
       return `
       <div class="visit-card" onclick="openDetail('${v.id}')">
         <div class="visit-card-left">
-          <span class="visit-time">${v.datetime}</span>
+          <span class="visit-time">${dateDisp}</span>
+          ${weekday ? `<span class="visit-weekday">${weekday}</span>` : ''}
           ${flagBadges}
         </div>
         <div class="visit-card-arrow">
@@ -1093,7 +1189,16 @@ function renderList() {
       </div>`;
     }).join('');
 
-    const lastDate = vlist[0].datetime;
+    // 施設グループの右側（最終訪問日）も同形式
+    const latest = vlist[0];
+    const latestKey = getDateKey(latest);
+    let lastDateOnly = (latest.datetime || '').split(' ')[0];
+    if (latestKey) {
+      const d = new Date(latestKey);
+      if (!isNaN(d.getTime())) {
+        lastDateOnly = `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+      }
+    }
     const isOpen = query ? 'open' : '';
 
     return `<div class="facility-group ${isOpen}">
@@ -1105,7 +1210,7 @@ function renderList() {
           <span class="facility-group-name">${facility}</span>
           <span class="facility-group-count">${vlist.length}</span>
         </div>
-        <span class="facility-group-last">${lastDate}</span>
+        <span class="facility-group-last">${lastDateOnly}</span>
       </div>
       <div class="facility-group-body">${cards}</div>
     </div>`;
@@ -1135,6 +1240,7 @@ function openNewVisit() {
   document.getElementById('f-contact').value = '';
   document.getElementById('f-memo').value = '';
   document.getElementById('f-flag-memo').value = '';
+  document.getElementById('prev-visit').style.display = 'none';
   document.querySelector('#screen-form .form-title').textContent = '訪問記録';
   renderItems();
   renderFlags();
@@ -1177,6 +1283,7 @@ function openEditVisit(id) {
   document.querySelector('#screen-form .form-title').textContent = '訪問記録を編集';
   renderItems();
   renderFlags();
+  showPrevVisit();
   showScreen('screen-form');
 }
 
@@ -1258,14 +1365,16 @@ function saveVisit() {
   if (!facility) { showToast('施設を選択してください'); return; }
 
   // 編集の場合は元の日時を維持、新規の場合は今の日時
-  let datetime, yearMonth;
+  let datetime, yearMonth, dateKey;
   if (editingVisitId) {
     const orig = visits.find(v => v.id === editingVisitId);
     datetime = orig?.datetime || '';
     yearMonth = orig?.yearMonth || '';
+    dateKey = orig?.dateKey || '';
   } else {
     const now = new Date();
     yearMonth = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+    dateKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
     datetime = `${now.getMonth()+1}/${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
   }
 
@@ -1280,6 +1389,7 @@ function saveVisit() {
     flags: JSON.parse(JSON.stringify(currentForm.flags)),
     datetime,
     yearMonth,
+    dateKey,
     exported: false,
   };
 
@@ -1294,6 +1404,95 @@ function saveVisit() {
   showToast(editingVisitId ? '更新しました' : '保存しました');
   editingVisitId = null;
   renderList();
+  showScreen('screen-list');
+}
+
+function showPrevVisit() {
+  const facility = document.getElementById('f-facility').value;
+  const el = document.getElementById('prev-visit');
+  if (!facility) { el.style.display = 'none'; return; }
+
+  // 編集中の自分自身を除いて前回訪問を探す
+  const prev = visits
+    .filter(v => v.facility === facility && v.id !== editingVisitId)
+    .sort((a, b) => b.id.localeCompare(a.id))[0];
+
+  if (!prev) { el.style.display = 'none'; return; }
+
+  const checkedItems = ITEMS.filter(i => prev.items?.[i.id]?.checked);
+  const itemTags = checkedItems.length > 0
+    ? `<div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px">${
+        checkedItems.map(i => {
+          const note = prev.items[i.id]?.note;
+          return `<span style="font-size:11px;color:var(--text2);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:2px">${i.label}${note ? '：' + note : ''}</span>`;
+        }).join('')
+      }</div>`
+    : '';
+  const flagLabels = FLAGS.filter(f => prev.flags?.[f.id]).map(f => f.label).join('・');
+  const flagBadge = flagLabels
+    ? `<span style="background:var(--active);color:white;font-size:10px;padding:2px 7px;border-radius:2px;font-weight:500;margin-left:6px">${flagLabels}</span>`
+    : '';
+
+  el.innerHTML = `
+    <div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent2);border-radius:2px;padding:12px 14px">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:13px;height:13px;color:var(--text3)"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span style="font-size:11px;font-family:'DM Mono',monospace;letter-spacing:0.08em;color:var(--text3);text-transform:uppercase">前回訪問</span>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text2)">${prev.datetime}</span>
+        ${flagBadge}
+      </div>
+      ${prev.mainWork ? `<div style="font-size:13px;color:var(--text);font-weight:500">${prev.mainWork}</div>` : ''}
+      ${itemTags}
+      ${prev.flagMemo ? `<div style="font-size:12px;color:var(--text2);margin-top:6px;line-height:1.5;padding-top:6px;border-top:1px dashed var(--border)">${prev.flagMemo}</div>` : ''}
+    </div>
+  `;
+  el.style.display = 'block';
+}
+
+function saveAndExport() {
+  const facility = document.getElementById('f-facility').value.trim();
+  if (!facility) { showToast('施設を選択してください'); return; }
+
+  let datetime, yearMonth, dateKey;
+  if (editingVisitId) {
+    const orig = visits.find(v => v.id === editingVisitId);
+    datetime = orig?.datetime || '';
+    yearMonth = orig?.yearMonth || '';
+    dateKey = orig?.dateKey || '';
+  } else {
+    const now = new Date();
+    yearMonth = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+    dateKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+    datetime = `${now.getMonth()+1}/${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  }
+
+  const id = editingVisitId || Date.now().toString();
+  const visit = {
+    id,
+    facility,
+    contact: document.getElementById('f-contact').value.trim(),
+    mainWork: document.getElementById('f-main-work').value,
+    memo: document.getElementById('f-memo').value.trim(),
+    flagMemo: document.getElementById('f-flag-memo').value.trim(),
+    items: JSON.parse(JSON.stringify(currentForm.items)),
+    flags: JSON.parse(JSON.stringify(currentForm.flags)),
+    datetime,
+    yearMonth,
+    dateKey,
+    exported: false,
+  };
+
+  if (editingVisitId) {
+    const idx = visits.findIndex(v => v.id === editingVisitId);
+    if (idx !== -1) visits[idx] = visit;
+  } else {
+    visits.push(visit);
+  }
+
+  localStorage.setItem('visits', JSON.stringify(visits));
+  editingVisitId = null;
+  renderList();
+  exportFromDetail(id);
   showScreen('screen-list');
 }
 
@@ -1350,7 +1549,7 @@ function openDetail(id) {
   const activeFlags = FLAGS.filter(f => v.flags?.[f.id]);
   const flagsHtml = activeFlags.length > 0 || v.flagMemo ? `
     <div class="detail-block" style="background:rgba(61,107,82,0.05)">
-      <div class="detail-block-label" style="color:var(--active)">営業フラグ</div>
+      <div class="detail-block-label" style="color:var(--active)">つなぐ（共有事項）</div>
       ${activeFlags.length > 0 ? `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:${v.flagMemo?'12px':'0'}">
         ${activeFlags.map(f => `<span style="background:var(--active);color:white;font-size:13px;padding:5px 12px;border-radius:2px;font-weight:500">${f.label}</span>`).join('')}
       </div>` : ''}
@@ -1466,7 +1665,7 @@ function exportAllCSV() {
   const headers = ['日時','施設','担当者','メイン作業',
     ...ITEMS.map(i => i.label),
     ...ITEMS.map(i => i.label + '_メモ'),
-    '営業フラグ','営業申し送り','メモ'];
+    'つなぐ（共有事項）','共有メモ','メモ'];
   const escape = s => {
     if (s == null) return '';
     s = String(s);
@@ -1489,7 +1688,7 @@ function exportAllCSV() {
     return row.map(escape).join(',');
   });
   const content = '\uFEFF' + headers.map(escape).join(',') + '\n' + rows.join('\n');
-  downloadFile(content, `fieldnote_${getDateStamp()}.csv`, 'text/csv');
+  downloadFile(content, `訪問記録_${getDateStamp()}_${visits.length}件.csv`, 'text/csv');
   showToast(`${visits.length}件をCSVで出力`);
 }
 
@@ -1510,6 +1709,78 @@ function renderExportStats() {
   const el = document.getElementById('export-stats');
   if (!el) return;
   el.textContent = `${visits.length}件　／　${facilities.length}施設`;
+  // 日付選択をデフォルトで今日に
+  const dateInput = document.getElementById('daily-date');
+  if (dateInput && !dateInput.value) {
+    const now = new Date();
+    dateInput.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  }
+  updateDailyCount();
+}
+
+// 既存記録のdateKeyを補完（後方互換）
+function getDateKey(v) {
+  if (v.dateKey) return v.dateKey;
+  // datetime "12/3 14:30" + yearMonth "2026-12" から復元
+  if (v.yearMonth && v.datetime) {
+    const m = v.datetime.match(/^(\d+)\/(\d+)/);
+    if (m) {
+      const year = v.yearMonth.split('-')[0];
+      return `${year}-${String(m[1]).padStart(2,'0')}-${String(m[2]).padStart(2,'0')}`;
+    }
+  }
+  return '';
+}
+
+function updateDailyCount() {
+  const dateKey = document.getElementById('daily-date')?.value;
+  const el = document.getElementById('daily-count');
+  if (!el) return;
+  if (!dateKey) { el.textContent = '日付を選択してください'; return; }
+  const count = visits.filter(v => getDateKey(v) === dateKey).length;
+  el.textContent = `${dateKey} の訪問：${count}件`;
+}
+
+function exportDailyEmail() {
+  const dateKey = document.getElementById('daily-date')?.value;
+  if (!dateKey) { showToast('日付を選択してください'); return; }
+  const dailyVisits = visits
+    .filter(v => getDateKey(v) === dateKey)
+    .sort((a, b) => a.datetime.localeCompare(b.datetime));
+  if (dailyVisits.length === 0) { showToast('この日の記録はありません'); return; }
+
+  const [yyyy, mm, dd] = dateKey.split('-');
+  const dateLabel = `${parseInt(mm)}/${parseInt(dd)}`;
+
+  const blocks = dailyVisits.map((v, idx) => {
+    const checkedLines = ITEMS
+      .filter(i => v.items?.[i.id]?.checked)
+      .map(i => `・${i.label}${v.items[i.id]?.note ? '（' + v.items[i.id].note + '）' : ''}`).join('\n');
+    const activeFlags = FLAGS.filter(f => v.flags?.[f.id]).map(f => f.label).join('・');
+    return [
+      `━━━━━━━━━━━━━━━━━━━━`,
+      `【${idx + 1}】${v.facility}　${v.datetime}`,
+      `━━━━━━━━━━━━━━━━━━━━`,
+      v.contact ? `■ 担当:${v.contact}` : '',
+      `■ 作業:${v.mainWork || '—'}`,
+      activeFlags ? `\n■ つなぐ（共有事項）\n${activeFlags}` : '',
+      v.flagMemo ? `\n■ 共有メモ\n${v.flagMemo}` : '',
+      checkedLines ? `\n■ あつめる(施設情報)\n${checkedLines}` : '',
+      v.memo ? `\n■ メモ\n${v.memo}` : '',
+    ].filter(l => l !== '').join('\n');
+  }).join('\n\n');
+
+  const body = [
+    `お疲れ様です。`,
+    `本日訪問した${dailyVisits.length}施設の報告です。`,
+    ``,
+    blocks,
+    ``,
+    `ご確認をお願いいたします。`,
+  ].join('\n');
+
+  const subject = encodeURIComponent(`【訪問報告まとめ】${dateLabel}（${dailyVisits.length}施設）`);
+  window.location.href = `mailto:?subject=${subject}&body=${encodeURIComponent(body)}`;
 }
 
 function exportFromDetail(id) {
@@ -1519,21 +1790,22 @@ function exportFromDetail(id) {
     .map(i => `・${i.label}${v.items[i.id]?.note ? '（' + v.items[i.id].note + '）' : ''}`).join('\n');
   const activeFlags = FLAGS.filter(f => v.flags?.[f.id]).map(f => f.label).join('・');
   const body = [
-    `お疲れ様です。表題の件、訪問してきましたので共有いたします。`,
+    `お疲れ様です。`,
+    `表題の件、訪問してきましたので共有いたします。`,
     ``,
     `【訪問報告】${v.facility}　${v.datetime}`,
     ``,
-    `■ 施設：${v.facility}`,
-    v.contact ? `■ 担当：${v.contact}` : '',
-    `■ 作業：${v.mainWork || '—'}`,
-    activeFlags ? `\n■ 営業フラグ\n${activeFlags}` : '',
-    v.flagMemo ? `\n■ 営業申し送り\n${v.flagMemo}` : '',
-    checkedLines ? `\n■ 確認項目\n${checkedLines}` : '',
+    `■ 施設:${v.facility}`,
+    v.contact ? `■ 担当:${v.contact}` : '',
+    `■ 作業:${v.mainWork || '—'}`,
+    activeFlags ? `\n■ つなぐ（共有事項）\n${activeFlags}` : '',
+    v.flagMemo ? `\n■ 共有メモ\n${v.flagMemo}` : '',
+    checkedLines ? `\n■ あつめる(施設情報)\n${checkedLines}` : '',
     v.memo ? `\n■ メモ\n${v.memo}` : '',
     ``,
     `ご確認をお願いいたします。`,
   ].filter(l => l !== '').join('\n');
-  const subject = encodeURIComponent(`【訪問報告】${v.facility} ${v.datetime}${activeFlags ? ' [' + activeFlags + ']' : ''}`);
+  const subject = encodeURIComponent(`【訪問報告】${v.facility} ${v.datetime}`);
   window.location.href = `mailto:?subject=${subject}&body=${encodeURIComponent(body)}`;
   v.exported = true;
   localStorage.setItem('visits', JSON.stringify(visits));
@@ -1560,12 +1832,15 @@ function renderSummary() {
   const facilityCount = {};
   const itemCount = {};
   const mainWorkCount = {};
+  const flagCount = {};
   ITEMS.forEach(i => { itemCount[i.id] = 0; });
+  FLAGS.forEach(f => { flagCount[f.id] = 0; });
 
   monthly.forEach(v => {
     facilityCount[v.facility] = (facilityCount[v.facility] || 0) + 1;
     if (v.mainWork) mainWorkCount[v.mainWork] = (mainWorkCount[v.mainWork] || 0) + 1;
     ITEMS.forEach(i => { if (v.items[i.id]?.checked) itemCount[i.id]++; });
+    FLAGS.forEach(f => { if (v.flags?.[f.id]) flagCount[f.id]++; });
   });
 
   const topItems = ITEMS.slice().sort((a,b) => itemCount[b.id] - itemCount[a.id]);
@@ -1573,6 +1848,8 @@ function renderSummary() {
   const mainWorkEntries = Object.entries(mainWorkCount).sort((a,b) => b[1]-a[1]);
   const maxFac = facilityEntries[0]?.[1] || 1;
   const maxItem = itemCount[topItems[0].id] || 1;
+  const totalFlags = Object.values(flagCount).reduce((a,b)=>a+b, 0);
+  const flaggedVisits = monthly.filter(v => FLAGS.some(f => v.flags?.[f.id])).length;
 
   el.innerHTML = `
     <!-- KPI -->
@@ -1587,6 +1864,22 @@ function renderSummary() {
       </div>
     </div>
 
+    <!-- つなぐ（共有事項）統計 -->
+    ${totalFlags > 0 ? `<div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--active);border-radius:2px;padding:16px;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;color:var(--text3);text-transform:uppercase">つなぐ（共有事項）</div>
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--active);font-weight:500">${flaggedVisits}件 / ${monthly.length}件</div>
+      </div>
+      ${FLAGS.map(f => {
+        const count = flagCount[f.id];
+        if (count === 0) return '';
+        return `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+          <span style="font-size:13px;color:var(--text)">${f.label}</span>
+          <span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--active);font-weight:500">${count}件</span>
+        </div>`;
+      }).join('')}
+    </div>` : ''}
+
     <!-- 確認項目ランキング -->
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:2px;padding:16px;margin-bottom:10px">
       <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;color:var(--text3);text-transform:uppercase;margin-bottom:14px">確認項目</div>
@@ -1595,7 +1888,7 @@ function renderSummary() {
         const pct = maxItem > 0 ? Math.round(count / maxItem * 100) : 0;
         return `<div style="margin-bottom:12px">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
-            <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:${count>0?'var(--text)':'var(--text3)'}">${item.icon}${item.label}</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:${count>0?'var(--text)':'var(--text3)'}"><span style="display:inline-flex;width:14px;height:14px;flex-shrink:0">${item.icon}</span>${item.label}</div>
             <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text2)">${count}件</span>
           </div>
           <div style="height:4px;background:var(--surface2);border-radius:2px">
@@ -1651,7 +1944,7 @@ function showScreen(id) {
   const hideNav = ['screen-form', 'screen-detail'].includes(id);
   document.querySelector('.header').style.display = hideNav ? 'none' : 'flex';
   document.querySelector('.header-nav').style.display = hideNav ? 'none' : 'flex';
-  if (id === 'screen-master') { renderMasterList(); renderWorkList(); }
+  if (id === 'screen-master') { renderMasterList(); renderWorkList(); renderExportStats(); }
   if (id === 'screen-summary') renderSummary();
   if (id === 'screen-export') renderExportStats();
   window.scrollTo(0,0);
