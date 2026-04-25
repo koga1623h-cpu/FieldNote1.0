@@ -1433,12 +1433,23 @@ function showPrevVisit() {
     ? `<span style="background:var(--active);color:white;font-size:10px;padding:2px 7px;border-radius:2px;font-weight:500;margin-left:6px">${flagLabels}</span>`
     : '';
 
+  // 日付を統一フォーマットに
+  const prevKey = getDateKey(prev);
+  let prevDateLabel = prev.datetime || '';
+  if (prevKey) {
+    const d = new Date(prevKey);
+    if (!isNaN(d.getTime())) {
+      const wd = ['日','月','火','水','木','金','土'][d.getDay()];
+      prevDateLabel = `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} (${wd})`;
+    }
+  }
+
   el.innerHTML = `
     <div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent2);border-radius:2px;padding:12px 14px">
       <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:13px;height:13px;color:var(--text3)"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         <span style="font-size:11px;font-family:'DM Mono',monospace;letter-spacing:0.08em;color:var(--text3);text-transform:uppercase">前回訪問</span>
-        <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text2)">${prev.datetime}</span>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text2)">${prevDateLabel}</span>
         ${flagBadge}
       </div>
       ${prev.mainWork ? `<div style="font-size:13px;color:var(--text);font-weight:500">${prev.mainWork}</div>` : ''}
@@ -1557,11 +1568,23 @@ function openDetail(id) {
     </div>
   ` : '';
 
+  // 日付を統一フォーマット
+  const dKey = getDateKey(v);
+  let dateLabel = v.datetime || '';
+  if (dKey) {
+    const dd = new Date(dKey);
+    if (!isNaN(dd.getTime())) {
+      const wd = ['日','月','火','水','木','金','土'][dd.getDay()];
+      const timePart = (v.datetime || '').split(' ')[1] || '';
+      dateLabel = `${dd.getFullYear()}.${String(dd.getMonth()+1).padStart(2,'0')}.${String(dd.getDate()).padStart(2,'0')} (${wd})${timePart ? ' ' + timePart : ''}`;
+    }
+  }
+
   document.getElementById('detail-content').innerHTML = `
     <div class="detail-hero">
       <div class="detail-facility">${v.facility || '（施設名未入力）'}</div>
       <div class="detail-meta">
-        ${v.datetime}
+        ${dateLabel}
         ${v.contact ? '<br>' + v.contact : ''}
         ${v.mainWork ? '<br>' + v.mainWork : ''}
       </div>
